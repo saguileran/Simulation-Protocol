@@ -12,28 +12,28 @@ This is just a component of the project, to visit the entire project check our m
 
 # Requirements
 
-This code is made in c++ and python language, to run it you have to install g++ compiler; on ubuntu just execute # sudo apt install g++ # in a terminal, on windows you need install VisualC++. Also the OpenMP library is needed but in the majority of cases it come with the compiler. Python language is used to analyze and plot data, for use the PlotData.py script you need install pandas, numpy and matplotlib library.
+This code is made in c++ and python language, to run it you have to install g++ compiler; on ubuntu just execute # sudo apt install g++ # in a terminal, on windows you need install VisualC++. Also the OpenMP library is needed but in the majority of cases it come with the compiler. Python language is used to analyze and plot data, for use the PlotData.py script you need to install pandas, numpy and matplotlib library.
 
 To visualaize data three options are evaluted: GNUPLOT, ParaView and OpenCL. The first two just need its corresponding software, while OpenCL need FreeGlut library. 
 
-We recommend use linux system to execute the code or at lest a virutal machine.
+We recommend to use linux system to execute the code or at least a virutal machine.
 
 
 # LBM Code
 
 The algorithm used have three principal parts, the recipe. 
 
-* **Stream:** Update density function vector for neighbors.
+* **Stream:** Update distribution function vector for neighbors.
 
-* **Macroscopic:** quantities: Calculate density function, fluxes and density equilibirum function for each point, for acoustic waves the density function is the pressure.
+* **Macroscopic:** quantities: Calculate the sum of the ditribution functions,then the sum over weighted distribution functions which are weighted by the velocity components.This is done for each lattice point.In this case we have acoustic waves so the sum of probability density functions is the pressure at each point, and the weighted sum is a vector field proportional  to the time derivative of the mean molecular displacement
 
-* **Colide:** Calculate and update density functionm, at the same time boundary conditions are execute.
+* **Colide:** Calculate and update distribution function, this is done at the same time for each lattice point which means that this method could be paralallelized.
 
 <p align="center">
   <img  src="https://ars.els-cdn.com/content/image/1-s2.0-S0965997816301855-gr3.jpg">
 </p>
 
-Schematic diagram of LBM steps, the data can be export in three ways: puntually or an "area microphone" (t, rho), or density function for all grid (x, y, rho). Export all grid data is slower than just micriphones, this data is use to visualization while microphones data is used to analyze Fourier spectrum.
+Schematic diagram of LBM steps, the data can be exported in three ways: punctually or  with an "area microphone" (t, rho), also obtaining the density function for all  the grid (x, y, rho). Exporting all the grid data is slower than using micriphones, this data is used for visualization while microphones data is used to analyze the Fourier spectrum.
 
 <p align="center">
   <img  src="Images/LBM-steps.png" width="600">
@@ -50,14 +50,14 @@ Necessary libraries
 #include <cmath>
 #include "omp.h"
 ```
-Lattice system and recorder dimensions, L for system and LF for recorder. Proportion can be tune to get bigger system dimensions. The simulation space is a rectangle of dimensions 501x50 while recorder is 330x14, the units are cells but we chose de convertion 1 cell = 1 mm.
+**Lattice system and recorder dimensions**, L for system and LF for recorder. Proportion can be tuned to get bigger system dimensions. The simulation space is a rectangle of dimensions 501x50 while recorder is 330x14, the units are cells but we chose de convertion 1 cell = 1 mm.
 ```c++
 const int proportion = 1;
 const int Lx = 501*proportion, Ly = 50*proportion;
 const int LFx = 330*(proportion), LFy = 14*(proportion);
 const double ke = 0, kF = 1; 
 ```
-Dimension, velocitym weights and auxiliar constants. There are several models of LBM, bidimensional and tridimensional system, that can be done, for implement new system you have to change velocities (Q) and weights (W) variables accord to system dimensions.
+**Dimension, velocity weights and auxiliar constants**. There are several models of LBM, depending on whether a bidimensional or tridimensional system is needed, in addition to that for a given dimension one can consider different degrees of freedom, this means the amount of directions to which the particle can stream to.Dependign on the  system that its intended to be implemented ,velocities (Q) and weights (W) are variables that need to be taken into account.This is something that could be calculated but that is accesible through literature as well, in this case  a system of 2 dimensions and 5 degrees of freedom is used.This is seen in the code through 1 direction in which the particle doesn't move and 4 directions that fit a cartesian like axis.
 ```c++
 const int Q = 5;
 const double W0 = 1.0 / 3;
@@ -73,7 +73,7 @@ const double UmUtau = 1 - Utau;
 
 ## Class
 
-The code is written with object oriented programming but is not optimized. The class name is LatticeBoltzmann and has four vectors associate: velocity (V), weight (W), density function (F), and new density function (Fnew). Moreover some auxiliar functions are defined as well as LBM main functions and data exportation. 
+The code is written with object oriented programming but is not optimized. The class name is LatticeBoltzmann and has four vectors associated: velocity (V), weight (W), density function (F), and new density function (Fnew). Moreover some auxiliar functions are defined as well as LBM main functions and data exportation. 
 ```c++
 class LatticeBoltzmann
 {
@@ -109,7 +109,7 @@ LatticeBoltzmann::LatticeBoltzmann(void){
   V[1][0] = 0; V[1][1] = 0;  V[1][2] = 1;  V[1][3] =  0;  V[1][4]= -1;
 }
 ```
-Macroscopic quantities functions, density function, flux, and equilibrium density function
+**Macroscopic quantities functions, density function, flux, and equilibrium density function**.Through the procedure of moment matching  one makes an Ansatz for the equilibrium f function by using a weighted series with increasing order of the velocity components, this function is tuned or matched so that the condictions of conservation of mass and momentum are retrieved, which basically assures that we obtain the wave equation at the macroscopic limit
 ```c++
 double LatticeBoltzmann::rho(int ix, int iy, bool UseNew){
   int i; double suma = 0;
@@ -137,7 +137,7 @@ double LatticeBoltzmann::feq(double rho0, double Jx0, double Jy0, int i){
 ```
 ### Main Functions
 
-Colide function. This function update distribution function and at the same time evaluate boundary conditions. The code can simule simple holes (commented lines) in the vertical bar but you can play with it and explore new geometries. A huge disadvantage of this code is when many boundary conditions are define, this decrase run time considerably, for this reason we suggest implement few walls. The walls absorbe part of waves depending of FKx (FKy) constants, usually it depends of materials.
+**Colide function.** Thsi step is called collision because it comes from the collision term of the Boltzmann equation,it updates the distribution functions according to that equation. The code simulates simple holes (commented lines) in the vertical bar but you can play with it and explore new geometries. A huge disadvantage of this code is when many boundary conditions are defined, this decreases run time considerably, for this reason we suggest implementing few walls. The walls absorbe part of waves depending of FKx (FKy) constants,  it depends on the type of material.
 
 ```c++
 void LatticeBoltzmann::Colide(void){
@@ -175,7 +175,7 @@ void LatticeBoltzmann::Colide(void){
 }
 ```
 
-Stream velocities, the if condition is make to avoid symmetri system
+**Stream velocities.** At this point the distribution function is updated by the calculations done earlier in the collision step, this mesoscopic movement is done according to the velocity components that are stored for each lattice point in V.
 
 ```c++
 void LatticeBoltzmann::Stream(void){
@@ -190,7 +190,7 @@ void LatticeBoltzmann::Stream(void){
   }
 }
 ```
-Initialize density functions
+**Initialize density functions** In order to give the system an initial state
 ```c++
 void LatticeBoltzmann::Initialize(double rho0,double Jx0,double Jy0){
   #pragma omp paralel for
@@ -203,7 +203,7 @@ void LatticeBoltzmann::Initialize(double rho0,double Jx0,double Jy0){
 }
 ```
 
-Source function. Here we generate acoustic source, in this case a senosoidal funtions is chose with a frequency of 10 cells, this frequency can vary but with extreme values the methods start to faile.
+**Source function**. Here we generate an acoustic source, in this case a senosoidal funtion is chosen with a wavelenght of 10 cells, this wavelenght can vary but with extreme values (too high in comparasion with the lattice size )the system fails to reproduce the wave equation.
 
 ```c++
 void LatticeBoltzmann::ImposeField(int t){
@@ -225,7 +225,7 @@ void LatticeBoltzmann::ImposeField(int t){
     //}
 }
 ```
-If you want test a pulse signal remove comment of if condition, also you can have a planar wave (several points consecutives). Furthermore several sources can be define here, just copy and edit the rho0, Jx0 and Jy0 functions with different coordinates.
+If you want to test a pulse signal remove the comment in the if condition, also you can have a planar wave (several consecutive points). Furthermore several sources can be defined here, just copy and edit the rho0, Jx0 and Jy0 functions with different coordinates.
 
 ## Data exportaton
 Export whole density function of grid, it is make to visualize wave propagation
@@ -246,7 +246,7 @@ void LatticeBoltzmann::PrintGrid(const char * NombreArchivo, int t){
   MiArchivo.close();
 }
 ```
-Export puntual mirophone
+**Export puntual microphone** Here data is stored given a set of coordintes, where to put the microphone, and also the name of the file in which to store it.
 ```c++
 void LatticeBoltzmann::Print(int t, int ix, int iy, const char * NombreArchivo){
   double rho0 = rho(ix, iy, false);
@@ -256,7 +256,7 @@ void LatticeBoltzmann::Print(int t, int ix, int iy, const char * NombreArchivo){
   ofs.close();
 }
 ```
-Export average of several puntual mirophones
+**Export average of several puntual mirophones** here the average of pressure in a surrounding area to a given point is stored in a file.
 ```c++
 void LatticeBoltzmann::Microphone(int t, int ix, int iy, const char * NombreArchivo){
   double suma = 0; 
@@ -279,7 +279,7 @@ The last two function generates data of density functions vs time, this data can
 
 ## Main Function
 
-This section contains the lattice boltzman execution. You can play with tmax value to get a relaxed system
+This section contains the lattice boltzmann execution. You can play with tmax value to get a relaxed system
 ```c++
 int main(void){
   
@@ -311,18 +311,18 @@ int main(void){
   return 0;
 }
 ```
-You can define new microphones copying Ondas.Prnt line and evaluating in other position
+You can define new microphones copying Ondas.Print line and evaluating in other position
 
 ## Visualization
 
 ### OpenCL
 
-OpenCL is a powerful tool to visualize data but it is a little complex, moreover the perspective tool, for this reason this protocol not focus in this software but you can find an example codu in this link [D2Q5-OpenCL](https://github.com/saguileran/Acoustics-Instruments/tree/master/Simulation/Scripts/D2Q5-OpenCL)
+OpenCL is a powerful tool to visualize data but it is a little complex, moreover the perspective tool, for this reason this protocol does not focus in this software but you can find an example code in this link [D2Q5-OpenCL](https://github.com/saguileran/Acoustics-Instruments/tree/master/Simulation/Scripts/D2Q5-OpenCL)
 
 
 ### Gnuplot
 
-The usual way to plot data in c++ scripts is with Gnuplot, to make it you have to add this code lines in the previus function in the //Gnuplot commented line, also is necessary create a pipeline between c++ executing and gnuplot. This is done with the same process present in the below gift but changing *time sudo ./a.out* by *time sudo ./a.out | gnuplot*, this generate a gif with the name pelicula0.
+The usual way to plot data in c++ scripts is with Gnuplot, to make it you have to add this code lines in the previus function in the //Gnuplot commented line, also is necessary create a pipeline between c++ executing and gnuplot. This is done with the same process present in the below gift but changing *time sudo ./a.out* by *time sudo ./a.out | gnuplot*, this generates a gif with the name pelicula0.
 
 ```c++
   std::cout << "set terminal gif animate" << std::endl;
@@ -342,24 +342,24 @@ Although Gnuplot is easy to use it does work pertty good for large data.
 
 ### ParaView
 
-This option give us a posibilite to get a good and interactive visualization, ParaView can red xyz files and plot in two or three dimension.
+This option gives us a the possibility to get a good and interactive visualization, ParaView can read xyz files and plot in two or three dimensions.
 
 
-# Executing Codee
+# Executing Code
 
-To execute the code you first need download file from the [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments) repository, downloadng complete, or just the c++ file [D2Q5](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/D2Q5-example.cpp). In the repository you can fnde other sccripts examples.
+To execute the code you first need to download the file from the [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments) repository, downloadng complete, or just the c++ file [D2Q5](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/D2Q5-example.cpp). In the repository you can fnde other scripts examples.
 
 <p align="center">
   <img width="570" src="Images/LBM-Example.gif">
 </p>
  
- In the same folder you can find a python LBM unoptimized [D3Q7](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/LB_D3Q7.ipynb), it is vero slowly and not get a good data visualization.
+ In the same folder you can find a python LBM unoptimized [D3Q7](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/LB_D3Q7.ipynb), it is vero slowly and doesn't have  a good data visualization.
  
 # Data Analyze
 
-With the data generate by the script, the microphone data, you can now process the data with the FT. To make this you will now use a python script [PlotData](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/PlotData.py)
+With the data generated by the script, the microphone data, you can now process the data with the FT. To make this you will now use a python script [PlotData](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/PlotData.py)
 
-Execute the python codee just with *python PlotData.py*, after execute the command enter the rood folder, starting and ending with /, and file name. When the code has finished a new image appear
+Execute the python codee just with *python PlotData.py*, after execute the command enter the root folder, starting and ending with /, and file name. When the code has finished a new image will appear
 
 <p align="center">
   <img width="700" src="Images/60mm.png">
