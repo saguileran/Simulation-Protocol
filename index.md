@@ -12,11 +12,12 @@ This is just a component of the project, to visit the entire project check our m
 
 # Requirements
 
-This code is made in c++ and python language, to run it you have to install g++ compiler; on ubuntu just execute # sudo apt install g++ # in a terminal, on windows you need install VisualC++. Also the OpenMP library is needed but in the majority of cases it come with the compiler.
+This code is made in c++ and python language, to run it you have to install g++ compiler; on ubuntu just execute # sudo apt install g++ # in a terminal, on windows you need install VisualC++. Also the OpenMP library is needed but in the majority of cases it come with the compiler. Python language is used to analyze and plot data, for use the PlotData.py script you need install pandas, numpy and matplotlib library.
 
-To visualaize data three options are evaluted: GNUPLOT, ParaView and OpenCL. The first two just need its corresponding software, while OpenCL need FreeGlut library.
+To visualaize data three options are evaluted: GNUPLOT, ParaView and OpenCL. The first two just need its corresponding software, while OpenCL need FreeGlut library. 
+
 We recommend use linux system to execute the code or at lest a virutal machine.
-#
+
 
 # LBM Code
 
@@ -35,7 +36,7 @@ The algorithm used have three principal parts, the recipe.
 Schematic diagram of LBM steps, the data can be export in three ways: puntually or an "area microphone" (t, rho), or density function for all grid (x, y, rho). Export all grid data is slower than just micriphones, this data is use to visualization while microphones data is used to analyze Fourier spectrum.
 
 <p align="center">
-  <img  src="/Images/LBM-steps.png" width="600">
+  <img  src="https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-steps.png" width="600">
 </p>
 
 ## Libraries and LBM constants
@@ -346,10 +347,14 @@ This option give us a posibilite to get a good and interactive visualization, Pa
 
 # Executing Codee
 
-To execute the code you first need download file from the [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments) repository, downloadng complete, or just the c++ file (D2Q5)[[D2Q7](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/D2Q5-example.cpp)]. In the repository you can fnde other sccripts examples.
+To execute the code you first need download file from the [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments) repository, downloadng complete, or just the c++ file (D2Q5)(https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/D2Q5-example.cpp)]. In the repository you can fnde other sccripts examples.
 
 <p align="center">
   <img width="570" src="/Images/LBM-Example.gif">
 </p>
  
+ In the same folder you can find a python LBM unoptimized (D3Q7)[https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/LB_D3Q7.ipynb], it is vero slowly and not get a good data visualization.
+ 
 # Data Analyze
+
+With the data generate by the script, the microphone data, you can now process the data with the FT. To make this you will now use a python script (PlotData)[https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/PlotData.py]
