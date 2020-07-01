@@ -6,3 +6,10 @@ Althought it is not recent, it has been more popularity in last decae between sc
 This protocol shows one way to implement a LBM in two and three dimensions with absorbing boundaries. Fot his propuse we will use Jupyter Notebook (Anaconda) with c++ and python languages.
 
 Firs of all you
+
+
+```ruby
+require 'redcarpet'
+markdown = Redcarpet.new("Hello World!")
+puts markdown.to_html
+```
