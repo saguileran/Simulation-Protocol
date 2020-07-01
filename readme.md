@@ -256,7 +256,7 @@ void LatticeBoltzmann::Print(int t, int ix, int iy, const char * NombreArchivo){
   ofs.close();
 }
 ```
-**Export average of several puntual mirophones** here the average of pressure in a surrounding area to a given point is stored in a file.
+**Export average of several punctual mirophones** Here the average of pressure in a surrounding area to a given point is stored in a file.
 ```c++
 void LatticeBoltzmann::Microphone(int t, int ix, int iy, const char * NombreArchivo){
   double suma = 0; 
@@ -275,7 +275,7 @@ void LatticeBoltzmann::Microphone(int t, int ix, int iy, const char * NombreArch
   ofs.close();
 }
 ```
-The last two function generates data of density functions vs time, this data can be analize with Fourier transform.
+The last two the  function generates data of density functions vs time, this data can be analized with a Fourier transform.
 
 ## Main Function
 
