@@ -325,4 +325,7 @@ GNUPlot commands
   
  ## Executing Codee
  
- ![](https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-Example.gif)
+ <p align="center">
+  <img width="570" src="https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-Example.gif">
+</p>
+ 
