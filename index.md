@@ -20,20 +20,30 @@ We recommend use linux system to execute the code or at lest a virutal machine.
 
 # Lattice Boltzmann Method
 
-The simplest code consits in three parts:
+The algorithm used have three principal parts, the recipe. 
 
-* Macroscopic quantities:
+* Stream: 
 
-Here
+* Macroscopic quantities: Calculate density function, fluxes and density equilibirum function for each point, for acoustic waves the density function is the pressure.
 
-* Colide
-
-* Stream
-
-![](https://ars.els-cdn.com/content/image/1-s2.0-S0965997816301855-gr3.jpg)
+* Colide:  
 
 
-Calling necessary libraries
+
+
+<p align="center">
+  <img  src="https://ars.els-cdn.com/content/image/1-s2.0-S0965997816301855-gr3.jpg">
+</p>
+
+
+Esquematicamente se utilizan
+
+
+<p align="center">
+  <img  src="https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-steps.png" width="600">
+</p>
+
+Necessary libraries
 
 ```c++
 #include <iostream>
@@ -42,16 +52,15 @@ Calling necessary libraries
 #include <cmath>
 #include "omp.h"
 ```
-
+Lattice system and recorder dimensions, L for system and LF for recorder. Proportion can be tune to get bigger system dimensions.
 ```c++
 const int proportion = 1;
 const int Lx = 501*proportion, Ly = 50*proportion;
 const int LFx = 330*(proportion), LFy = 14*(proportion);
-
-const double ke = 0, kF = 1; //k_e =  k enviorment = 0 (absortion wall)
-//const double Aperture_x = 2*proportion;
-//const double Hole_pos = LFx/3;
-
+const double ke = 0, kF = 1; 
+```
+Dimensions, velocity weights and method constants. When the LBM change dimensions and velocities the variables Q and W0 change.
+```c++
 const int Q = 5;
 const double W0 = 1.0 / 3;
 
@@ -62,11 +71,8 @@ const double AUX0 = 1 - TresC2 * (1 - W0);
 const double tau = 0.5;
 const double Utau = 1.0 / tau;
 const double UmUtau = 1 - Utau;
-
 ```
-
-
-Class
+The code is written with object oriented programming but is not optimized. The class name is LatticeBoltzmann and has four vectors associate: velocity (V), weight (W), density function (F), and new density function (Fnew). Moreover some auxiliar functions are defined as well as LBM main functions and data exportation. 
 ```c++
 class LatticeBoltzmann
 {
@@ -89,24 +95,16 @@ public:
   void Print(int t, int ix, int iy, const char * NombreArchivo);
   void Microphone(int t, int ix, int iy, const char * NombreArchivo);
 };
-
 ```
-
-
-Velocity and weights vectors
+The velocity and weight vectors are define according to dimensions of method, in this case we will use 2 dimensions and 5 veolocities.
 ```c++
 LatticeBoltzmann::LatticeBoltzmann(void){
-  //Cargar los pesos
   w[0] = W0;   w[1] = w[2] = w[3] = w[4] = (1 - W0) / 4.0;
-  //Cargar los vectores
   V[0][0] = 0; V[0][1] = 1;  V[0][2] = 0;  V[0][3] = -1;  V[0][4]=  0;
   V[1][0] = 0; V[1][1] = 0;  V[1][2] = 1;  V[1][3] =  0;  V[1][4]= -1;
 }
-
 ```
-
-Macroscopic quantities
-
+Macroscopic quantities functions, density function, flux, and equilibrium density function
 ```c++
 double LatticeBoltzmann::rho(int ix, int iy, bool UseNew){
   int i; double suma = 0;
@@ -131,10 +129,7 @@ double LatticeBoltzmann::feq(double rho0, double Jx0, double Jy0, int i){
   if(i==0){ return rho0 * AUX0;}
   else{     return w[i] * (TresC2 * rho0 + 3* (V[0][i] *Jx0 + V[1][i] * Jy0));}
 }
-
 ```
-
-
 Colide operator
 ```c++
 void LatticeBoltzmann::Colide(void){
