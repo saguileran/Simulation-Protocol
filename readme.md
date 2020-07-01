@@ -137,7 +137,7 @@ double LatticeBoltzmann::feq(double rho0, double Jx0, double Jy0, int i){
 ```
 ### Main Functions
 
-**Colide function.** Thsi step is called collision because it comes from the collision term of the Boltzmann equation,it updates the distribution functions according to that equation. The code simulates simple holes (commented lines) in the vertical bar but you can play with it and explore new geometries. A huge disadvantage of this code is when many boundary conditions are defined, this decreases run time considerably, for this reason we suggest implementing few walls. The walls absorbe part of waves depending of FKx (FKy) constants,  it depends on the type of material.
+**Collide function.** Thsi step is called collision because it comes from the collision term of the Boltzmann equation,it updates the distribution functions according to that equation. The code simulates simple holes (commented lines) in the vertical bar but you can play with it and explore new geometries. A huge disadvantage of this code is when many boundary conditions are defined, this decreases run time considerably, for this reason we suggest implementing few walls. The walls absorbe part of waves depending of FKx (FKy) constants,  it depends on the type of material.
 
 ```c++
 void LatticeBoltzmann::Colide(void){
@@ -338,7 +338,7 @@ The usual way to plot data in c++ scripts is with Gnuplot, to make it you have t
   std::cout << "set object 1 rect from graph 0, graph 0 to graph 1, graph 1 back " << std::endl;
   std::cout << "set object 1 rect fc rgb 'black' fillstyle solid 1.0 " << std::endl;
 ```
-Although Gnuplot is easy to use it does work pertty good for large data.
+Although Gnuplot is easy to use it does work well for large data set.
 
 ### ParaView
 
