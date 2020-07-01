@@ -36,7 +36,7 @@ The algorithm used have three principal parts, the recipe.
 Schematic diagram of LBM steps, the data can be export in three ways: puntually or an "area microphone" (t, rho), or density function for all grid (x, y, rho). Export all grid data is slower than just micriphones, this data is use to visualization while microphones data is used to analyze Fourier spectrum.
 
 <p align="center">
-  <img  src="https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-steps.png" width="600">
+  <img  src="Images/LBM-steps.png" width="600">
 </p>
 
 ## Libraries and LBM constants
