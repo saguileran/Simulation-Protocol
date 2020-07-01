@@ -1,12 +1,14 @@
 <!-- "## Simulation Protocol ## -->
 
 Lattice Boltzmann Method (LBM) is a Computational Fluid Dynamis (CFD) originated from Automata Celular Method (LGA) and developed in 1990's by Hardy–Pomeau–de Pazzis and Frisch–Hasslacher–Pomeau.
-Although this method is not recent, it has become more popular in the last decade between scientists and engineering due to its versatility to parallelize and model several phenomena. Now exits several LBM software (public and private) that can be used to make CFD, some of them are: Palabos, ProLB, pybm, OpenLB, etc.
+Although this method is relatively new, it has become more popular in the last decade between scientists and engineering due to its versatility to parallelize and model several phenomena. Now exits several LBM software (public and private) that can be used to make CFD, some of them are: Palabos, ProLB, pybm, OpenLB, etc.
 
 
 # Description
 
-This protocol describe how to implement and how works a LBM in two and three dimensions with absorbing boundaries and simple geometries. The idea is explore how LBM simulate acoustical waves in rectangular geometries and analyse the data generetad, using Fourier transform. This is just a component of the project, to visit the entire project check our main page on GitHub, [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments)
+This protocol describes how to implement  LBM in two and three dimensions with absorbing boundaries walls in simple geometries. The idea is to explore how LBM simulates acoustical waves in rectangular geometries and analyze the data generated, using Fourier transform. 
+
+This is just a component of the project, to visit the entire project check our main page on GitHub: [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments)
 
 # Requirements
 
@@ -22,7 +24,7 @@ The simplest code consits in three parts:
 
 * Macroscopic quantities:
 
-
+Here
 
 * Colide
 
