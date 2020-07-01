@@ -49,14 +49,14 @@ Necessary libraries
 #include <cmath>
 #include "omp.h"
 ```
-Lattice system and recorder dimensions, L for system and LF for recorder. Proportion can be tune to get bigger system dimensions.
+Lattice system and recorder dimensions, L for system and LF for recorder. Proportion can be tune to get bigger system dimensions. The simulation space is a rectangle of dimensions 501x50 while recorder is 330x14, the units are cells but we chose de convertion 1 cell = 1 mm.
 ```c++
 const int proportion = 1;
 const int Lx = 501*proportion, Ly = 50*proportion;
 const int LFx = 330*(proportion), LFy = 14*(proportion);
 const double ke = 0, kF = 1; 
 ```
-Dimensions, velocity weights and method constants. When the LBM change dimensions and velocities the variables Q and W0 change.
+Dimension, velocitym weights and auxiliar constants. There are several models of LBM, bidimensional and tridimensional system, that can be done, for implement new system you have to change velocities (Q) and weights (W) variables accord to system dimensions.
 ```c++
 const int Q = 5;
 const double W0 = 1.0 / 3;
@@ -136,7 +136,8 @@ double LatticeBoltzmann::feq(double rho0, double Jx0, double Jy0, int i){
 ```
 ### Main Functions
 
-Colide function
+Colide function. This function update distribution function and at the same time evaluate boundary conditions. The code can simule simple holes (commented lines) in the vertical bar but you can play with it and explore new geometries. A huge disadvantage of this code is when many boundary conditions are define, this decrase run time considerably, for this reason we suggest implement few walls. The walls absorbe part of waves depending of FKx (FKy) constants, usually it depends of materials.
+
 ```c++
 void LatticeBoltzmann::Colide(void){
   int ix, iy, iz, i; double rho0, Jx0, Jy0;  //for all cell
@@ -173,8 +174,7 @@ void LatticeBoltzmann::Colide(void){
 }
 ```
 
-
-Stream velocities
+Stream velocities, the if condition is make to avoid symmetri system
 
 ```c++
 void LatticeBoltzmann::Stream(void){
@@ -202,7 +202,7 @@ void LatticeBoltzmann::Initialize(double rho0,double Jx0,double Jy0){
 }
 ```
 
-Source function, define type of source
+Source function. Here we generate acoustic source, in this case a senosoidal funtions is chose with a frequency of 10 cells, this frequency can vary but with extreme values the methods start to faile.
 
 ```c++
 void LatticeBoltzmann::ImposeField(int t){
@@ -224,8 +224,10 @@ void LatticeBoltzmann::ImposeField(int t){
     //}
 }
 ```
+If you want test a pulse signal remove comment of if condition, also you can have a planar wave (several points consecutives). Furthermore several sources can be define here, just copy and edit the rho0, Jx0 and Jy0 functions with different coordinates.
+
 ## Data exportaton
-Export whole density function of grid
+Export whole density function of grid, it is make to visualize wave propagation
 ```c++
 void LatticeBoltzmann::PrintGrid(const char * NombreArchivo, int t){
   std::ofstream MiArchivo(NombreArchivo + std::to_string(t));
@@ -272,8 +274,11 @@ void LatticeBoltzmann::Microphone(int t, int ix, int iy, const char * NombreArch
   ofs.close();
 }
 ```
+The last two function generates data of density functions vs time, this data can be analize with Fourier transform.
+
 ## Main Function
 
+This section contains the lattice boltzman execution. You can play with tmax value to get a relaxed system
 ```c++
 int main(void){
   
@@ -294,10 +299,10 @@ int main(void){
     Ondas.Stream();
 
     //Export microphoes data, time vs pressure
-    Ondas.Print(t, 20+LFx,    Ly/2, "LongPulse10k-0mm.dat");
+    Ondas.Print(t, Xposition, Yposition, "FileName.dat");
 
     //Commands to make data animation
-    if(t%5 == 0){Ondas.PrintGrid("LongPulse10k.csv.", t);}
+    if(t%5 == 0){Ondas.PrintGrid("DataName.csv.", t);}
 
     //Uncomment to use GNUPLOT animation
     //std::cout << "splot 'Ondas.dat' using 1:2:3  with points palette pointsize 3 pointtype 7 " << std::endl;
@@ -305,9 +310,18 @@ int main(void){
   return 0;
 }
 ```
+You can define new microphones copying Ondas.Prnt line and evaluating in other position
+
 ## Visualization
 
-GNUPlot commands
+### OpenCL
+
+OpenCL is a powerful tool to visualize data but it is a little complex, moreover the perspective tool, for this reason this protocol not focus in this software but you can find an example codu in this link [D2Q5-Gnuplot](https://github.com/saguileran/Acoustics-Instruments/tree/master/Simulation/Scripts/Final)
+
+
+### Gnuplot
+
+The usual way to plot data in c++ scripts is with Gnuplot, to make it you have to add this code lines in the previus function in the //Gnuplot commented line, also is necessary create a pipeline between c++ executing and gnuplot. This is done with the same process present in the below gift but changing *time sudo ./a.out* by *time sudo ./a.out | gnuplot*, this generate a gif with the name pelicula0.
 
 ```c++
   std::cout << "set terminal gif animate" << std::endl;
@@ -323,11 +337,19 @@ GNUPlot commands
   std::cout << "set object 1 rect from graph 0, graph 0 to graph 1, graph 1 back " << std::endl;
   std::cout << "set object 1 rect fc rgb 'black' fillstyle solid 1.0 " << std::endl;
 ```
-  
- # Executing Codee
- 
- <p align="center">
+Although Gnuplot is easy to use it does work pertty good for large data.
+
+### ParaView
+
+This option give us a posibilite to get a good and interactive visualization, ParaView can red xyz files and plot in two or three dimension.
+
+
+# Executing Codee
+
+To execute the code you first need download file from the [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments) 
+
+<p align="center">
   <img width="570" src="https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-Example.gif">
 </p>
  
- # Data Analyze
+# Data Analyze
