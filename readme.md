@@ -228,14 +228,14 @@ void LatticeBoltzmann::ImposeField(int t){
 If you want to test a pulse signal remove the comment in the if condition, also you can have a planar wave (several consecutive points). Furthermore several sources can be defined here, just copy and edit the rho0, Jx0 and Jy0 functions with different coordinates.
 
 ## Data exportaton
-Export whole density function of grid, it is make to visualize wave propagation
+Export the whole density function of  the grid, it is used to visualize wave propagation
 ```c++
 void LatticeBoltzmann::PrintGrid(const char * NombreArchivo, int t){
   std::ofstream MiArchivo(NombreArchivo + std::to_string(t));
   double rho0, Jx0, Jy0;
   #pragma omp paralel for
   {
-  MiArchivo << "X,Y,rho\n";
+    << "X,Y,rho\n";
   for(int ix=0;ix<Lx;ix++){
     for(int iy=0;iy<Ly;iy++){
         rho0 = rho(ix, iy, false);  //Jx0=Jx(ix,iy,iz,false); Jy0=Jy(ix,iy,iz,false); Jz0=Jz(ix,iy,iz,false);
@@ -246,7 +246,7 @@ void LatticeBoltzmann::PrintGrid(const char * NombreArchivo, int t){
   MiArchivo.close();
 }
 ```
-**Export puntual microphone** Here data is stored given a set of coordintes, where to put the microphone, and also the name of the file in which to store it.
+**Export punctual microphone** Here data is stored given a set of coordinates in which to put the microphone, and also the name of the file in which to store it.
 ```c++
 void LatticeBoltzmann::Print(int t, int ix, int iy, const char * NombreArchivo){
   double rho0 = rho(ix, iy, false);
