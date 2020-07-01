@@ -347,14 +347,20 @@ This option give us a posibilite to get a good and interactive visualization, Pa
 
 # Executing Codee
 
-To execute the code you first need download file from the [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments) repository, downloadng complete, or just the c++ file (D2Q5)(https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/D2Q5-example.cpp)]. In the repository you can fnde other sccripts examples.
+To execute the code you first need download file from the [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments) repository, downloadng complete, or just the c++ file [D2Q5](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/D2Q5-example.cpp). In the repository you can fnde other sccripts examples.
 
 <p align="center">
   <img width="570" src="/Images/LBM-Example.gif">
 </p>
  
- In the same folder you can find a python LBM unoptimized (D3Q7)[https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/LB_D3Q7.ipynb], it is vero slowly and not get a good data visualization.
+ In the same folder you can find a python LBM unoptimized [D3Q7](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/LB_D3Q7.ipynb), it is vero slowly and not get a good data visualization.
  
 # Data Analyze
 
-With the data generate by the script, the microphone data, you can now process the data with the FT. To make this you will now use a python script (PlotData)[https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/PlotData.py]
+With the data generate by the script, the microphone data, you can now process the data with the FT. To make this you will now use a python script [PlotData](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/PlotData.py)
+
+Execute the python codee just with *python PlotData.py*, after execute the command enter the rood folder, starting and ending with /, and file name. When the code has finished a new image appear
+
+<p align="center">
+  <img width="700" src="https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/60mm.png">
+</p>
