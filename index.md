@@ -35,7 +35,7 @@ The algorithm used have three principal parts, the recipe.
 Schematic diagram of LBM steps, the data can be export in three ways: puntually or an "area microphone" (t, rho), or density function for all grid (x, y, rho). Export all grid data is slower than just micriphones, this data is use to visualization while microphones data is used to analyze Fourier spectrum.
 
 <p align="center">
-  <img  src="https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-steps.png" width="600">
+  <img  src="/Images/LBM-steps.png" width="600">
 </p>
 
 ## Libraries and LBM constants
@@ -349,7 +349,7 @@ This option give us a posibilite to get a good and interactive visualization, Pa
 To execute the code you first need download file from the [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments) repository, downloadng complete, or just the c++ file (D2Q5)[[D2Q7](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/D2Q5-example.cpp)]. In the repository you can fnde other sccripts examples.
 
 <p align="center">
-  <img width="570" src="https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-Example.gif">
+  <img width="570" src="/Images/LBM-Example.gif">
 </p>
  
 # Data Analyze
