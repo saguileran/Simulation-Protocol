@@ -316,7 +316,7 @@ You can define new microphones copying Ondas.Prnt line and evaluating in other p
 
 ### OpenCL
 
-OpenCL is a powerful tool to visualize data but it is a little complex, moreover the perspective tool, for this reason this protocol not focus in this software but you can find an example codu in this link [D2Q5-Gnuplot](https://github.com/saguileran/Acoustics-Instruments/tree/master/Simulation/Scripts/Final)
+OpenCL is a powerful tool to visualize data but it is a little complex, moreover the perspective tool, for this reason this protocol not focus in this software but you can find an example codu in this link [D2Q5-OpenCL](https://github.com/saguileran/Acoustics-Instruments/tree/master/Simulation/Scripts/D2Q5-OpenCL)
 
 
 ### Gnuplot
@@ -346,7 +346,7 @@ This option give us a posibilite to get a good and interactive visualization, Pa
 
 # Executing Codee
 
-To execute the code you first need download file from the [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments) 
+To execute the code you first need download file from the [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments) repository, downloadng complete, or just the c++ file (D2Q5)[[D2Q7](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/D2Q5-example.cpp)]. In the repository you can fnde other sccripts examples.
 
 <p align="center">
   <img width="570" src="https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-Example.gif">
