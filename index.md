@@ -18,30 +18,27 @@ To visualaize data three options are evaluted: GNUPLOT, ParaView and OpenCL. The
 We recommend use linux system to execute the code or at lest a virutal machine.
 #
 
-# Lattice Boltzmann Method
+# LBM Code
 
 The algorithm used have three principal parts, the recipe. 
 
-* Stream: 
+* **Stream:** Update density function vector for neighbors.
 
-* Macroscopic quantities: Calculate density function, fluxes and density equilibirum function for each point, for acoustic waves the density function is the pressure.
+* **Macroscopic:** quantities: Calculate density function, fluxes and density equilibirum function for each point, for acoustic waves the density function is the pressure.
 
-* Colide:  
-
-
-
+* **Colide:** Calculate and update density functionm, at the same time boundary conditions are execute.
 
 <p align="center">
   <img  src="https://ars.els-cdn.com/content/image/1-s2.0-S0965997816301855-gr3.jpg">
 </p>
 
-
-Esquematicamente se utilizan
-
+Schematic diagram of LBM steps, the data can be export in three ways: puntually or an "area microphone" (t, rho), or density function for all grid (x, y, rho). Export all grid data is slower than just micriphones, this data is use to visualization while microphones data is used to analyze Fourier spectrum.
 
 <p align="center">
   <img  src="https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-steps.png" width="600">
 </p>
+
+## Libraries and LBM constants
 
 Necessary libraries
 
@@ -72,6 +69,9 @@ const double tau = 0.5;
 const double Utau = 1.0 / tau;
 const double UmUtau = 1 - Utau;
 ```
+
+## Class
+
 The code is written with object oriented programming but is not optimized. The class name is LatticeBoltzmann and has four vectors associate: velocity (V), weight (W), density function (F), and new density function (Fnew). Moreover some auxiliar functions are defined as well as LBM main functions and data exportation. 
 ```c++
 class LatticeBoltzmann
@@ -96,6 +96,10 @@ public:
   void Microphone(int t, int ix, int iy, const char * NombreArchivo);
 };
 ```
+## Functions
+
+### Auxiliar Functions
+
 The velocity and weight vectors are define according to dimensions of method, in this case we will use 2 dimensions and 5 veolocities.
 ```c++
 LatticeBoltzmann::LatticeBoltzmann(void){
@@ -130,7 +134,9 @@ double LatticeBoltzmann::feq(double rho0, double Jx0, double Jy0, int i){
   else{     return w[i] * (TresC2 * rho0 + 3* (V[0][i] *Jx0 + V[1][i] * Jy0));}
 }
 ```
-Colide operator
+### Main Functions
+
+Colide function
 ```c++
 void LatticeBoltzmann::Colide(void){
   int ix, iy, iz, i; double rho0, Jx0, Jy0;  //for all cell
@@ -161,19 +167,14 @@ void LatticeBoltzmann::Colide(void){
 	else if(iy == Ly - 2 || iy == 1){ fnew[ix][iy][2] = ke *  f[ix][iy][4]; fnew[ix][iy][4] = ke *  f[ix][iy][2]; } 
 	else{ fnew[ix][iy][2] = UmUtau*f[ix][iy][2] + Utau*feq(rho0, Jx0, Jy0, 2);
 	      fnew[ix][iy][4] = UmUtau*f[ix][iy][4] + Utau*feq(rho0, Jx0, Jy0, 4); }
-	
-	//std::cout << ix << " " << iy << " " << rho0 << std::endl; //microphone place
-	//if(ix == Lx-1 and iy == Ly-1){std::cout << " " << std::endl;}
-	
     }
   }
  }
 }
-
 ```
 
 
-Stream
+Stream velocities
 
 ```c++
 void LatticeBoltzmann::Stream(void){
@@ -187,11 +188,8 @@ void LatticeBoltzmann::Stream(void){
 	  f[(ix+V[0][i]+Lx)%Lx][(iy+V[1][i]+Ly)%Ly][i] = fnew[ix][iy][i];}
   }
 }
-
 ```
-
-
-Initialize
+Initialize density functions
 ```c++
 void LatticeBoltzmann::Initialize(double rho0,double Jx0,double Jy0){
   #pragma omp paralel for
@@ -202,10 +200,9 @@ void LatticeBoltzmann::Initialize(double rho0,double Jx0,double Jy0){
 	f[ix][iy][i] = feq(rho0, Jx0, Jy0, i);
 }
 }
-
 ```
 
-Source
+Source function, define type of source
 
 ```c++
 void LatticeBoltzmann::ImposeField(int t){
@@ -226,9 +223,9 @@ void LatticeBoltzmann::ImposeField(int t){
     //    }
     //}
 }
-
 ```
-Data exportaton
+## Data exportaton
+Export whole density function of grid
 ```c++
 void LatticeBoltzmann::PrintGrid(const char * NombreArchivo, int t){
   std::ofstream MiArchivo(NombreArchivo + std::to_string(t));
@@ -239,14 +236,15 @@ void LatticeBoltzmann::PrintGrid(const char * NombreArchivo, int t){
   for(int ix=0;ix<Lx;ix++){
     for(int iy=0;iy<Ly;iy++){
         rho0 = rho(ix, iy, false);  //Jx0=Jx(ix,iy,iz,false); Jy0=Jy(ix,iy,iz,false); Jz0=Jz(ix,iy,iz,false);
-	//export data to paraview visualization
 	MiArchivo << ix << "," << iy << "," << rho0 << '\n';
     }
   }
   }
   MiArchivo.close();
 }
-
+```
+Export puntual mirophone
+```c++
 void LatticeBoltzmann::Print(int t, int ix, int iy, const char * NombreArchivo){
   double rho0 = rho(ix, iy, false);
   std::ofstream ofs;
@@ -254,7 +252,9 @@ void LatticeBoltzmann::Print(int t, int ix, int iy, const char * NombreArchivo){
   ofs << t << ',' << rho0 << '\n';
   ofs.close();
 }
-
+```
+Export average of several puntual mirophones
+```c++
 void LatticeBoltzmann::Microphone(int t, int ix, int iy, const char * NombreArchivo){
   double suma = 0; 
 
@@ -272,8 +272,8 @@ void LatticeBoltzmann::Microphone(int t, int ix, int iy, const char * NombreArch
   ofs.close();
 }
 ```
+## Main Function
 
-Main Function
 ```c++
 int main(void){
   
@@ -304,10 +304,11 @@ int main(void){
   }
   return 0;
 }
-
 ```
+## Visualization
 
 GNUPlot commands
+
 ```c++
   std::cout << "set terminal gif animate" << std::endl;
   std::cout << "set output 'pelicula0.gif'" << std::endl;
@@ -321,11 +322,12 @@ GNUPlot commands
   std::cout << "set view map;  set size ratio .9 " << std::endl;
   std::cout << "set object 1 rect from graph 0, graph 0 to graph 1, graph 1 back " << std::endl;
   std::cout << "set object 1 rect fc rgb 'black' fillstyle solid 1.0 " << std::endl;
-  ```
+```
   
- ## Executing Codee
+ # Executing Codee
  
  <p align="center">
   <img width="570" src="https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-Example.gif">
 </p>
  
+ # Data Analyze
