@@ -3,9 +3,10 @@
 Lattice Boltzmann Method (LBM) is a Computational Fluid Dynamis (CFD) originated from Automata Celular Method (LGA) and developed in 1990's by Hardy–Pomeau–de Pazzis and Frisch–Hasslacher–Pomeau.
 Although this method is not recent, it has become more popular in the last decade between scientists and engineering due to its versatility to parallelize and model several phenomena. Now exits several LBM software (public and private) that can be used to make CFD, some of them are: Palabos, ProLB, pybm, OpenLB, etc.
 
+
 # Description
 
-This protocol describe how to implement and how works a LBM in two and three dimensions with absorbing boundaries and simple geometries. The idea is explore how LBM simulate acoustical waves in rectangular geometries and analyse the data generetad, using Fourier transform. 
+This protocol describe how to implement and how works a LBM in two and three dimensions with absorbing boundaries and simple geometries. The idea is explore how LBM simulate acoustical waves in rectangular geometries and analyse the data generetad, using Fourier transform. This is just a component of the project, to visit the entire project check our main page on GitHub, [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments)
 
 # Requirements
 
@@ -17,9 +18,10 @@ We recommend use linux system to execute the code or at lest a virutal machine.
 
 # Lattice Boltzmann Method
 
-The simplest code consits in thre pats:
+The simplest code consits in three parts:
 
-* Macroscopic quantities
+* Macroscopic quantities:
+
 
 
 * Colide
@@ -281,23 +283,7 @@ int main(void){
   LatticeBoltzmann Ondas;  
   int t,tmax=1000;
   
-  //GNUPLOT
-  /*
-  // Estos comandos se descomentan si se quiere guardar el gif
-  std::cout << "set terminal gif animate" << std::endl;
-  std::cout << "set output 'pelicula0.gif'" << std::endl;
-  
-  //Estos comandos se descomentan para hacer el gif
-  std::cout << "set pm3d map; set palette color positive" << std::endl;
-  std::cout << "set palette defined (-1 \"red\", 0 \"white\", 1 \"blue\")" << std::endl;
-  std::cout << "set cbrange[-1:1]" << std::endl;
-  std::cout << "set xrange[-1:501]; set yrange[-1:51]; set zrange[-1:1]" << std::endl;
-  //std::cout << "set view map scale 1 " << std::endl;
-
-  //std::cout << "set view map;  set size ratio .9 " << std::endl;
-  //std::cout << "set object 1 rect from graph 0, graph 0 to graph 1, graph 1 back " << std::endl;
-  //std::cout << "set object 1 rect fc rgb 'black' fillstyle solid 1.0 " << std::endl;
-  */
+  //GNUPLOT LINES
   
   Ondas.Initialize(0,0,0);
   for(t=0;t<tmax;t++){
@@ -312,8 +298,6 @@ int main(void){
 
     //Export microphoes data, time vs pressure
     Ondas.Print(t, 20+LFx,    Ly/2, "LongPulse10k-0mm.dat");
-    Ondas.Print(t, 20+LFx+10, Ly/2, "LongPulse10k-10mm.dat");
-    Ondas.Print(t, 20+LFx+60, Ly/2, "LongPulse10k-60mm.dat");
 
     //Commands to make data animation
     if(t%5 == 0){Ondas.PrintGrid("LongPulse10k.csv.", t);}
@@ -326,3 +310,18 @@ int main(void){
 
 ```
 
+GNUPlot commands
+```c++
+  std::cout << "set terminal gif animate" << std::endl;
+  std::cout << "set output 'pelicula0.gif'" << std::endl;
+ 
+  std::cout << "set pm3d map; set palette color positive" << std::endl;
+  std::cout << "set palette defined (-1 \"red\", 0 \"white\", 1 \"blue\")" << std::endl;
+  std::cout << "set cbrange[-1:1]" << std::endl;
+  std::cout << "set xrange[-1:501]; set yrange[-1:51]; set zrange[-1:1]" << std::endl;
+  std::cout << "set view map scale 1 " << std::endl;
+
+  std::cout << "set view map;  set size ratio .9 " << std::endl;
+  std::cout << "set object 1 rect from graph 0, graph 0 to graph 1, graph 1 back " << std::endl;
+  std::cout << "set object 1 rect fc rgb 'black' fillstyle solid 1.0 " << std::endl;
+  ```
