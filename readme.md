@@ -25,7 +25,7 @@ The algorithm used have three principal parts, the recipe.
 
 * **Stream:** Update distribution function vector for neighbors.
 
-* **Macroscopic:** quantities: Calculate the sum of the ditribution functions,then the sum over weighted distribution functions which are weighted by the velocity components.This is done for each lattice point.In this case we have acoustic waves so the sum of probability density functions is the pressure at each point, and the weighted sum is a vector field proportional  to the time derivative of the mean molecular displacement
+* **Macroscopic:** Calculate the sum of the ditribution functions,then the sum over weighted distribution functions which are weighted by the velocity components.This is done for each lattice point.In this case we have acoustic waves so the sum of probability density functions is the pressure at each point, and the weighted sum is a vector field proportional  to the time derivative of the mean molecular displacement
 
 * **Colide:** Calculate and update distribution function, this is done at the same time for each lattice point which means that this method could be paralallelized.
 
