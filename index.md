@@ -327,3 +327,7 @@ GNUPlot commands
   std::cout << "set object 1 rect from graph 0, graph 0 to graph 1, graph 1 back " << std::endl;
   std::cout << "set object 1 rect fc rgb 'black' fillstyle solid 1.0 " << std::endl;
   ```
+  
+ ## Executing Codee
+ 
+ ![](https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-Example.gif)
