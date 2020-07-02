@@ -50,14 +50,18 @@ Necessary libraries
 #include <cmath>
 #include "omp.h"
 ```
-**Lattice system and recorder dimensions**, L for system and LF for recorder. Proportion can be tuned to get bigger system dimensions. The simulation space is a rectangle of dimensions 501x50 while recorder is 330x14, the units are cells but we chose de convertion 1 cell = 1 mm.
+**Lattice and recorder dimensions**
+
+L  is the system dimension and LF is for recorder dimensions. Proportion can be tuned to get bigger system dimensions. The simulation space is a rectangle of dimensions 501x50 while recorder is 330x14, the units are cells but we chose de convertion 1 cell = 1 mm.
 ```c++
 const int proportion = 1;
 const int Lx = 501*proportion, Ly = 50*proportion;
 const int LFx = 330*(proportion), LFy = 14*(proportion);
 const double ke = 0, kF = 1; 
 ```
-**Dimension, velocity weights and auxiliar constants**. There are several models of LBM, depending on whether a bidimensional or tridimensional system is needed, in addition to that for a given dimension one can consider different degrees of freedom, this means the amount of directions to which the particle can stream to.Dependign on the  system that its intended to be implemented ,velocities (Q) and weights (W) are variables that need to be taken into account.This is something that could be calculated but that is accesible through literature as well, in this case  a system of 2 dimensions and 5 degrees of freedom is used.This is seen in the code through 1 direction in which the particle doesn't move and 4 directions that fit a cartesian like axis.
+**Velocity and weights vectors, dimension and auxiliar constants**.
+
+There are several models of LBM, depending on whether a bidimensional or tridimensional system is needed, in addition to that for a given dimension one can consider different degrees of freedom, this means the amount of directions to which the particle can stream to.Dependign on the  system that its intended to be implemented ,velocities (Q) and weights (W) are variables that need to be taken into account.This is something that could be calculated but that is accesible through literature as well, in this case  a system of 2 dimensions and 5 degrees of freedom is used.This is seen in the code through 1 direction in which the particle doesn't move and 4 directions that fit a cartesian like axis.
 ```c++
 const int Q = 5;
 const double W0 = 1.0 / 3;
@@ -109,7 +113,9 @@ LatticeBoltzmann::LatticeBoltzmann(void){
   V[1][0] = 0; V[1][1] = 0;  V[1][2] = 1;  V[1][3] =  0;  V[1][4]= -1;
 }
 ```
-**Macroscopic quantities functions, density function, flux, and equilibrium density function**.Through the procedure of moment matching  one makes an Ansatz for the equilibrium f function by using a weighted series with increasing order of the velocity components, this function is tuned or matched so that the condictions of conservation of mass and momentum are retrieved, which basically assures that we obtain the wave equation at the macroscopic limit
+**Macroscopic quantities functions: density, flux, and equilibrium density functionw**.
+
+Through the procedure of moment matching  one makes an Ansatz for the equilibrium f function by using a weighted series with increasing order of the velocity components, this function is tuned or matched so that the condictions of conservation of mass and momentum are retrieved, which basically assures that we obtain the wave equation at the macroscopic limit
 ```c++
 double LatticeBoltzmann::rho(int ix, int iy, bool UseNew){
   int i; double suma = 0;
@@ -137,7 +143,9 @@ double LatticeBoltzmann::feq(double rho0, double Jx0, double Jy0, int i){
 ```
 ### Main Functions
 
-**Collide function.** Thsi step is called collision because it comes from the collision term of the Boltzmann equation,it updates the distribution functions according to that equation. The code simulates simple holes (commented lines) in the vertical bar but you can play with it and explore new geometries. A huge disadvantage of this code is when many boundary conditions are defined, this decreases run time considerably, for this reason we suggest implementing few walls. The walls absorbe part of waves depending of FKx (FKy) constants,  it depends on the type of material.
+**Collide function.** 
+
+This step is called collision because it comes from the collision term of the Boltzmann equation,it updates the distribution functions according to that equation. The code simulates simple holes (commented lines) in the vertical bar but you can play with it and explore new geometries. A huge disadvantage of this code is when many boundary conditions are defined, this decreases run time considerably, for this reason we suggest implementing few walls. The walls absorbe part of waves depending of FKx (FKy) constants,  it depends on the type of material.
 
 ```c++
 void LatticeBoltzmann::Colide(void){
@@ -175,7 +183,9 @@ void LatticeBoltzmann::Colide(void){
 }
 ```
 
-**Stream velocities.** At this point the distribution function is updated by the calculations done earlier in the collision step, this mesoscopic movement is done according to the velocity components that are stored for each lattice point in V.
+**Stream velocities.** 
+
+At this point the distribution function is updated by the calculations done earlier in the collision step, this mesoscopic movement is done according to the velocity components that are stored for each lattice point in V.
 
 ```c++
 void LatticeBoltzmann::Stream(void){
@@ -190,7 +200,9 @@ void LatticeBoltzmann::Stream(void){
   }
 }
 ```
-**Initialize density functions** In order to give the system an initial state
+**Initialize** 
+
+In order to give the system an initial state the density functions is initialize.
 ```c++
 void LatticeBoltzmann::Initialize(double rho0,double Jx0,double Jy0){
   #pragma omp paralel for
@@ -203,7 +215,9 @@ void LatticeBoltzmann::Initialize(double rho0,double Jx0,double Jy0){
 }
 ```
 
-**Source function**. Here we generate an acoustic source, in this case a senosoidal funtion is chosen with a wavelenght of 10 cells, this wavelenght can vary but with extreme values (too high in comparasion with the lattice size )the system fails to reproduce the wave equation.
+**Source function**
+
+Here we generate an acoustic source, in this case a senosoidal funtion is chosen with a wavelenght of 10 cells, this wavelenght can vary but with extreme values (too high in comparasion with the lattice size )the system fails to reproduce the wave equation.
 
 ```c++
 void LatticeBoltzmann::ImposeField(int t){
@@ -228,6 +242,7 @@ void LatticeBoltzmann::ImposeField(int t){
 If you want to test a pulse signal remove the comment in the if condition, also you can have a planar wave (several consecutive points). Furthermore several sources can be defined here, just copy and edit the rho0, Jx0 and Jy0 functions with different coordinates.
 
 ## Data exportaton
+
 Export the whole density function of  the grid, it is used to visualize wave propagation
 ```c++
 void LatticeBoltzmann::PrintGrid(const char * NombreArchivo, int t){
@@ -246,7 +261,9 @@ void LatticeBoltzmann::PrintGrid(const char * NombreArchivo, int t){
   MiArchivo.close();
 }
 ```
-**Export punctual microphone** Here data is stored given a set of coordinates in which to put the microphone, and also the name of the file in which to store it.
+**Export punctual microphone** 
+
+Here data is stored given a set of coordinates in which to put the microphone, and also the name of the file in which to store it.
 ```c++
 void LatticeBoltzmann::Print(int t, int ix, int iy, const char * NombreArchivo){
   double rho0 = rho(ix, iy, false);
@@ -256,7 +273,9 @@ void LatticeBoltzmann::Print(int t, int ix, int iy, const char * NombreArchivo){
   ofs.close();
 }
 ```
-**Export average of several punctual mirophones** Here the average of pressure in a surrounding area to a given point is stored in a file.
+**Export not punctual mirophone** 
+
+Here the average of pressure in a surrounding area to a given point is stored in a file.
 ```c++
 void LatticeBoltzmann::Microphone(int t, int ix, int iy, const char * NombreArchivo){
   double suma = 0; 
