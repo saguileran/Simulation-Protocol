@@ -1,7 +1,7 @@
 <!-- "## Simulation Protocol ## -->
 
 Lattice Boltzmann Method (LBM) is a Computational Fluid Dynamis (CFD) originated from Automata Celular Method (LGA) and developed in 1990's by Hardy–Pomeau–de Pazzis and Frisch–Hasslacher–Pomeau.
-Although this method is relatively new, it has become more popular in the last decade between scientists and engineering due to its versatility to parallelize and model several phenomena. Now exits several LBM software (public and private) that can be used to make CFD, some of them are: Palabos, ProLB, pybm, OpenLB, etc.
+Although this method is relatively new, it has become more popular in the last decade between scientists and engineering due to its versatility to parallelize and model several phenomena. Now exits several LBM software (public and private) that can be used to make LBM, some of them are: Palabos, ProLB, pybm, OpenLB, etc.
 
 
 # Description
@@ -12,9 +12,25 @@ This is just a component of the project, to visit the entire project check our m
 
 # Requirements
 
-This code is made in c++ and python language, to run it you have to install g++ compiler; on ubuntu just execute # sudo apt install g++ # in a terminal, on windows you need install VisualC++. Also the OpenMP library is needed but in the majority of cases it come with the compiler. Python language is used to analyze and plot data, for use the PlotData.py script you need to install pandas, numpy and matplotlib library.
+This code is made in c++ and python language. To run c++ code you need g++ compiler, it can be installed in ubuntu machine just executing 
+```linux
+sudo apt-get install g++
+```
+for windows you need install VisualC++. Also the OpenMP library is needed but in the majority of cases it come with the compiler. 
 
-To visualaize data three options are evaluted: GNUPLOT, ParaView and OpenCL. The first two just need its corresponding software, while OpenCL need FreeGlut library. 
+Python language is used to analyze and plot data, the code works with python3 but python2 can be used changing some lines. The libraries pandas, numpy and matplotlib are necesary, you can install entering the follow codes in a terminal
+
+```linux
+sudo python install numpy matplotlib pandas
+```
+
+To visualaize data three options are evaluted: Gnuplot, ParaView and OpenCL. The first two just need its corresponding software, while OpenCL need FreeGlut library. 
+
+```linux
+sudo apt-get instal gnuplot
+sudo apt-get instal paraview
+sudo apt-get instal reeglut3-dev
+```
 
 We recommend to use linux system to execute the code or at least a virutal machine.
 
@@ -341,7 +357,7 @@ OpenCL is a powerful tool to visualize data but it is a little complex, moreover
 
 ### Gnuplot
 
-The usual way to plot data in c++ scripts is with Gnuplot, to make it you have to add this code lines in the previus function in the //Gnuplot commented line, also is necessary create a pipeline between c++ executing and gnuplot. This is done with the same process present in the below gift but changing *time sudo ./a.out* by *time sudo ./a.out | gnuplot*, this generates a gif with the name pelicula0.
+The usual way to plot data in c++ scripts is with Gnuplot, to make it you have to add this code lines in the previus function in the //Gnuplot commented line, also is necessary create a pipeline between c++ executing and gnuplot. This is done with the same process present in the below gift but changing ' time sudo ./a.out* by ' time sudo ./a.out | gnuplot ', this generates a gif with the name pelicula0.
 
 ```c++
   std::cout << "set terminal gif animate" << std::endl;
@@ -366,19 +382,27 @@ This option gives us a the possibility to get a good and interactive visualizati
 
 # Executing Code
 
-To execute the code you first need to download the file from the [Acoustical Instruments.](https://github.com/saguileran/Acoustics-Instruments) repository,you can download the complete repository, or just the c++ file [D2Q5](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/D2Q5-example.cpp). In the repository you can find other script examples.
+To execute the code you first need to download the file from the [Acoustical Instruments](https://github.com/saguileran/Acoustics-Instruments) repository, you can download the complete repository or just the c++ file [D2Q5](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/D2Q5-example.cpp). In the repository you can find other script examples in the Scripts folder of Smulation.
 
 <p align="center">
   <img width="570" src="Images/LBM-Example.gif">
 </p>
- 
- In the same folder you can find a python LBM unoptimized [D3Q7](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/LB_D3Q7.ipynb), it is very slowl and doesn't have  a good data visualization.
+
+The firs codes execute the c++ file and generate the file a.out, to run it you enter the second line 
+```linux
+sudo g++ -fopenmp D2Q5-examples.cpp
+time sudo ./a.out
+```
+If you want plot with gnuplot you must add '| gnuplot' to create a pipeline, this send the output data of a.out to gnupot, also you have to uncomment the lines of Gnuplot in the c++ file.
+
+
+ In the same folder (Scripts) you can find a python LBM unoptimized code [D3Q7](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/LB_D3Q7.ipynb), it is very slowly and doesn't have a good data visualization, here matplotlib library is used.
  
 # Data Analyze
 
-With the data generated by the script, the microphone data, you can now process it with the FT. To make this you will now use a python script [PlotData](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/PlotData.py)
+With the data generated by the cpp code with any micriphone function, you can process it with the Fourier Transform. To make this you will use a python script  [PlotData](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/PlotData.py).
 
-Execute the python code just with *python PlotData.py*, after executing the command enter the root folder, starting and ending with /, and file name. When the code has finished a new image will appear
+Execute the python code just with 'python PlotData.py', after executing the command it ask you for direction folder, it must start and end with / in other case an error will occur, after that you also enter the file name. When the code has finished a new image will appear, the name is the same that the data name.
 
 <p align="center">
   <img width="700" src="Images/60mm.png">
