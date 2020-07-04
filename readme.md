@@ -11,12 +11,12 @@ This is just a component of the project [Acoustical Instruments.](https://github
 # Requirements
 
 **C++**
+
 For run c++ code you need g++ compiler. You can download in Linux system running one of the two last lines below, the first one is necessary
 ```linux
 sudo apt-get update
 sudo apt-get install g++
 sudo apt install build-essential
-
 ```
 We suggest a gcc version bigger than 9.0. For Windows system you have to donwload [Visaual C++](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) program and also intall OpenMP library (in Linux system this library comes with the Package).
 
@@ -44,7 +44,6 @@ sudo apt-get instal reeglut3-dev
 
 We recommend using a Linux system to execute the code, or at least a virtual machine, for facility. On Windows system should work it but compile errors can appear.
 
-
 # LBM Code
 
 ## Algorithm
@@ -68,9 +67,9 @@ Schematic diagram of LBM steps, the data can be exported in three ways: punctual
   <img  src="Images/LBM-steps.png" width="600">
 </p>
 
-## Libraries 
+## Libraries and LBM Variables
 
-Necessary libraries
+**Libraries**
 
 ```c++
 #include <iostream>
@@ -79,7 +78,7 @@ Necessary libraries
 #include <cmath>
 #include "omp.h"
 ```
-## Lattice and recorder dimensions
+**Lattice and recorder dimensions**
 
 L  is the system dimension and LF is for recorder dimensions. Proportion can be tuned to get bigger system dimensions. The simulation space is a rectangle of dimensions 501x50 while recorder is 330x14, the units are cells but we chose de convertion 1 cell = 1 mm.
 ```c++
@@ -88,7 +87,7 @@ const int Lx = 501*proportion, Ly = 50*proportion;
 const int LFx = 330*(proportion), LFy = 14*(proportion);
 const double ke = 0, kF = 1; 
 ```
-## Velocity and weights vectors, dimension and auxiliar constants
+**Velocity and weights vectors, dimension and auxiliar constants**
 
 There are several models of LBM, depending on whether a bidimensional or tridimensional system is needed, in addition to that for a given dimension one can consider different degrees of freedom, this means the amount of directions to which the particle can stream to.Dependign on the  system that its intended to be implemented ,velocities (Q) and weights (W) are variables that need to be taken into account.This is something that could be calculated but that is accesible through literature as well, in this case  a system of 2 dimensions and 5 degrees of freedom is used.This is seen in the code through 1 direction in which the particle doesn't move and 4 directions that fit a cartesian like axis.
 ```c++
@@ -132,7 +131,7 @@ public:
 ```
 ## Functions
 
-### Auxiliar Functions
+**Auxiliar Functions**
 
 The velocity and weight vectors are define according to dimensions of method, in this case we will use 2 dimensions and 5 veolocities.
 ```c++
@@ -142,7 +141,7 @@ LatticeBoltzmann::LatticeBoltzmann(void){
   V[1][0] = 0; V[1][1] = 0;  V[1][2] = 1;  V[1][3] =  0;  V[1][4]= -1;
 }
 ```
-### Macroscopic quantities functions: density, flux, and equilibrium density functionw
+**Macroscopic quantities functions: density, flux, and equilibrium density functionw**
 
 Through the procedure of moment matching  one makes an Ansatz for the equilibrium f function by using a weighted series with increasing order of the velocity components, this function is tuned or matched so that the condictions of conservation of mass and momentum are retrieved, which basically assures that we obtain the wave equation at the macroscopic limit
 ```c++
@@ -170,7 +169,7 @@ double LatticeBoltzmann::feq(double rho0, double Jx0, double Jy0, int i){
   else{     return w[i] * (TresC2 * rho0 + 3* (V[0][i] *Jx0 + V[1][i] * Jy0));}
 }
 ```
-### Main Functions
+**Main Functions**
 
 **Collide function.** 
 
@@ -270,7 +269,7 @@ void LatticeBoltzmann::ImposeField(int t){
 ```
 If you want to test a pulse signal remove the comment in the if condition, also you can have a planar wave (several consecutive points). Furthermore several sources can be defined here, just copy and edit the rho0, Jx0 and Jy0 functions with different coordinates.
 
-## Data exportaton
+## Data Exportaton
 
 Export the whole density function of  the grid, it is used to visualize wave propagation
 ```c++
@@ -325,7 +324,7 @@ void LatticeBoltzmann::Microphone(int t, int ix, int iy, const char * NombreArch
 ```
 The last two the  function generates data of density functions vs time, this data can be analized with a Fourier transform.
 
-## Main Function
+**Main Function**
 
 This section contains the lattice boltzmann execution. You can play with tmax value to get a relaxed system
 ```c++
@@ -361,14 +360,14 @@ int main(void){
 ```
 You can define new microphones copying Ondas.Print line and evaluating in other position
 
-## Visualization
+# Visualization
 
-### OpenCL
+**OpenCL**
 
 OpenCL is a powerful tool to visualize data but it is a little complex, moreover the perspective tool, for this reason this protocol does not focus in this software but you can find an example code in this link [D2Q5-OpenCL](https://github.com/saguileran/Acoustics-Instruments/tree/master/Simulation/Scripts/D2Q5-OpenCL)
 
 
-### Gnuplot
+**Gnuplot**
 
 The usual way to plot data in c++ scripts is with Gnuplot, to make it you have to add this code lines in the previus function in the //Gnuplot commented line, also is necessary create a pipeline between c++ executing and gnuplot. This is done with the same process present in the below gift but changing ' time sudo ./a.out* by ' time sudo ./a.out | gnuplot ', this generates a gif with the name pelicula0.
 
@@ -388,12 +387,14 @@ The usual way to plot data in c++ scripts is with Gnuplot, to make it you have t
 ```
 Although Gnuplot is easy to use it does work well for large data set.
 
-### ParaView
+*ParaView**
 
 This option gives us a the possibility to get a good and interactive visualization, ParaView can read xyz files and plot in two or three dimensions.
 
 
 # Executing Code
+
+**Generating Data**
 
 To execute the code you first need to download the file from the [Acoustical Instruments](https://github.com/saguileran/Acoustics-Instruments) repository, you can download the complete repository or just the c++ file [D2Q5](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/D2Q5-example.cpp). In the repository you can find other script examples in the Scripts folder of Smulation.
 
@@ -411,7 +412,7 @@ If you want plot with gnuplot you must add '| gnuplot' to create a pipeline, thi
 
  In the same folder (Scripts) you can find a python LBM unoptimized code [D3Q7](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/LB_D3Q7.ipynb), it is very slowly and doesn't have a good data visualization, here matplotlib library is used.
  
-# Data Analyze
+**Data Analyze**
 
 With the data generated by the cpp code with any micriphone function, you can process it with the Fourier Transform. To make this you will use a python script  [PlotData](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/PlotData.py).
 
