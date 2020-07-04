@@ -80,16 +80,28 @@ Schematic diagram of LBM steps, the data can be exported in three ways: punctual
 ```
 **Lattice and recorder dimensions**
 
-L  is the system dimension and LF is for recorder dimensions. Proportion can be tuned to get bigger system dimensions. The simulation space is a rectangle of dimensions 501x50 while recorder is 330x14, the units are cells but we chose de convertion 1 cell = 1 mm.
+For the system dimensions, Lx and Ly are used, while LF is for recorder dimensions. Proportion can be tuned to get bigger system dimensions. The simulation space is a rectangle of dimensions 501x50 while the recorder is 330x14, the units are cells but we chose de conversion 1 cell = 1 mm. 
 ```c++
 const int proportion = 1;
 const int Lx = 501*proportion, Ly = 50*proportion;
 const int LFx = 330*(proportion), LFy = 14*(proportion);
 const double ke = 0, kF = 1; 
+//const double Aperture_x = 2*proportion;
+//const double Hole_pos = LFx/3;
 ```
+The last two commented lines are used to model recorder holes. 
+
+<p align="center">
+  <img width=500  src="https://github.com/saguileran/Simulation-Protocol/blob/master/Images/LBM-System.png">
+</p>
+
 **Velocity and weights vectors, dimension and auxiliar constants**
 
-There are several models of LBM, depending on whether a bidimensional or tridimensional system is needed, in addition to that for a given dimension one can consider different degrees of freedom, this means the amount of directions to which the particle can stream to.Dependign on the  system that its intended to be implemented ,velocities (Q) and weights (W) are variables that need to be taken into account.This is something that could be calculated but that is accesible through literature as well, in this case  a system of 2 dimensions and 5 degrees of freedom is used.This is seen in the code through 1 direction in which the particle doesn't move and 4 directions that fit a cartesian like axis.
+Depending on which LBM is used you must define correctly the velocity and weight vectors. Q is the degree of freedom of particles (velocities) and D is the dimension of Lattice, the number of directions to which the particle can stream to, you can find it in the literature.
+
+In this tutorial, a system of 2 dimensions and 5 degrees of freedom is used. This first velocity is the center velocity, where the particle doesn't move, and the other four are directions that fit to cartesian like axis.
+
+
 ```c++
 const int Q = 5;
 const double W0 = 1.0 / 3;
@@ -102,10 +114,11 @@ const double tau = 0.5;
 const double Utau = 1.0 / tau;
 const double UmUtau = 1 - Utau;
 ```
+Moreover, the LBM use additional constants according to collision operator.
 
 ## Class
 
-The code is written with object oriented programming but is not optimized. The class name is LatticeBoltzmann and has four vectors associated: velocity (V), weight (W), density function (F), and new density function (Fnew). Moreover some auxiliar functions are defined as well as LBM main functions and data exportation. 
+The code is written with object-oriented programming but is not optimized. The class name is LatticeBoltzmann and has four vectors associated: velocity (V), weight (W), density function (F), and new density function (Fnew). Also, some auxiliary functions are defined as well as LBM main functions and data exportation. 
 ```c++
 class LatticeBoltzmann
 {
@@ -133,7 +146,8 @@ public:
 
 **Auxiliar Functions**
 
-The velocity and weight vectors are define according to dimensions of method, in this case we will use 2 dimensions and 5 veolocities.
+The velocity and weight vectors are defined according to dimensions of the method. For this tutorial we will use 2 dimensions and 5 velocities.
+
 ```c++
 LatticeBoltzmann::LatticeBoltzmann(void){
   w[0] = W0;   w[1] = w[2] = w[3] = w[4] = (1 - W0) / 4.0;
@@ -141,7 +155,8 @@ LatticeBoltzmann::LatticeBoltzmann(void){
   V[1][0] = 0; V[1][1] = 0;  V[1][2] = 1;  V[1][3] =  0;  V[1][4]= -1;
 }
 ```
-**Macroscopic quantities functions: density, flux, and equilibrium density functionw**
+
+**Macroscopic quantities: flux, density, and equilibrium density functions**
 
 Through the procedure of moment matching  one makes an Ansatz for the equilibrium f function by using a weighted series with increasing order of the velocity components, this function is tuned or matched so that the condictions of conservation of mass and momentum are retrieved, which basically assures that we obtain the wave equation at the macroscopic limit
 ```c++
@@ -150,27 +165,21 @@ double LatticeBoltzmann::rho(int ix, int iy, bool UseNew){
     for(i=0;i<Q;i++){if(UseNew) suma += fnew[ix][iy][i]; else suma += f[ix][iy][i]; }
   return suma;
 }
-
 double LatticeBoltzmann::Jx(int ix, int iy, bool UseNew){
   int i; double suma;
     for(suma=0,i=0;i<Q;i++){if(UseNew) suma += fnew[ix][iy][i]*V[0][i]; else suma += f[ix][iy][i]*V[0][i]; }
     return suma;
 }
-
 double LatticeBoltzmann::Jy(int ix, int iy, bool UseNew){
   int i; double suma;
   for(suma=0,i=0;i<Q;i++){if(UseNew) suma += fnew[ix][iy][i]*V[1][i]; else suma += f[ix][iy][i]*V[1][i];}
   return suma;
 }
-
-
 double LatticeBoltzmann::feq(double rho0, double Jx0, double Jy0, int i){
   if(i==0){ return rho0 * AUX0;}
   else{     return w[i] * (TresC2 * rho0 + 3* (V[0][i] *Jx0 + V[1][i] * Jy0));}
 }
 ```
-**Main Functions**
-
 **Collide function.** 
 
 This step is called collision because it comes from the collision term of the Boltzmann equation,it updates the distribution functions according to that equation. The code simulates simple holes (commented lines) in the vertical bar but you can play with it and explore new geometries. A huge disadvantage of this code is when many boundary conditions are defined, this decreases run time considerably, for this reason we suggest implementing few walls. The walls absorbe part of waves depending of FKx (FKy) constants,  it depends on the type of material.
@@ -414,9 +423,15 @@ If you want plot with gnuplot you must add '| gnuplot' to create a pipeline, thi
  
 **Data Analyze**
 
-With the data generated by the cpp code with any micriphone function, you can process it with the Fourier Transform. To make this you will use a python script  [PlotData](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/PlotData.py).
+With the data generated by the cpp code using ani any microphone function, you can process the data with Fourier Transform and analyze its spectrum. To make this you will use the python script [PlotData](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/Examples/PlotData.py) that can download or in other case copy to a text editor.
 
-Execute the python code just with 'python PlotData.py', after executing the command it ask you for direction folder, it must start and end with / in other case an error will occur, after that you also enter the file name. When the code has finished a new image will appear, the name is the same that the data name.
+Execute the python code using **sudo python3 PlotData.py**, then enter the direction folder, must start and end with **/**  or an error will occur, and file name. When the code has finished a new image will appear in the folder with the same name that the data.
+
+
+<p align="center">
+  <img width="700" src="PythonGif.py">
+</p>
+
 
 <p align="center">
   <img width="700" src="Images/60mm.png">
