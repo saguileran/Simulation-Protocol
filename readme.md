@@ -49,13 +49,15 @@ We recommend using a Linux system to execute the code, or at least a virtual mac
 
 ## Algorithm
 
-The algorithm implemente here (LBM - BGK operator) have three principal parts (the recipe). 
+The LB algorithm implemented here (LBM - BGK operator) has three principal parts (the recipe). 
 
 * **Stream:** Update distribution function vector for neighbors.
 
-* **Macroscopic:** Calculate the sum of the ditribution functions,then the sum over weighted distribution functions which are weighted by the velocity components.This is done for each lattice point.In this case we have acoustic waves so the sum of probability density functions is the pressure at each point, and the weighted sum is a vector field proportional  to the time derivative of the mean molecular displacement
-
-* **Colide:** Calculate and update distribution function, this is done at the same time for each lattice point which means that this method could be paralallelized.
+* **Macroscopic:** Calculate density (acoustic pressure), flux and equilibrium density functions. 
+<!--
+the sum of the ditribution functions, then the sum over weighted distribution functions which are weighted by the velocity components.This is done for each lattice point.In this case we have acoustic waves so the sum of probability density functions is the pressure at each point, and the weighted sum is a vector field proportional  to the time derivative of the mean molecular displacement
+-->
+* **Colide:** Calculate and update distribution function, this is done to each lattice point which means that this method could be parallelized.
 
 <p align="center">
   <img  src="https://ars.els-cdn.com/content/image/1-s2.0-S0965997816301855-gr3.jpg">
@@ -78,7 +80,7 @@ Necessary libraries
 #include <cmath>
 #include "omp.h"
 ```
-**Lattice and recorder dimensions**
+## Lattice and recorder dimensions
 
 L  is the system dimension and LF is for recorder dimensions. Proportion can be tuned to get bigger system dimensions. The simulation space is a rectangle of dimensions 501x50 while recorder is 330x14, the units are cells but we chose de convertion 1 cell = 1 mm.
 ```c++
@@ -87,7 +89,7 @@ const int Lx = 501*proportion, Ly = 50*proportion;
 const int LFx = 330*(proportion), LFy = 14*(proportion);
 const double ke = 0, kF = 1; 
 ```
-**Velocity and weights vectors, dimension and auxiliar constants**.
+## Velocity and weights vectors, dimension and auxiliar constants
 
 There are several models of LBM, depending on whether a bidimensional or tridimensional system is needed, in addition to that for a given dimension one can consider different degrees of freedom, this means the amount of directions to which the particle can stream to.Dependign on the  system that its intended to be implemented ,velocities (Q) and weights (W) are variables that need to be taken into account.This is something that could be calculated but that is accesible through literature as well, in this case  a system of 2 dimensions and 5 degrees of freedom is used.This is seen in the code through 1 direction in which the particle doesn't move and 4 directions that fit a cartesian like axis.
 ```c++
@@ -141,7 +143,7 @@ LatticeBoltzmann::LatticeBoltzmann(void){
   V[1][0] = 0; V[1][1] = 0;  V[1][2] = 1;  V[1][3] =  0;  V[1][4]= -1;
 }
 ```
-**Macroscopic quantities functions: density, flux, and equilibrium density functionw**.
+### Macroscopic quantities functions: density, flux, and equilibrium density functionw
 
 Through the procedure of moment matching  one makes an Ansatz for the equilibrium f function by using a weighted series with increasing order of the velocity components, this function is tuned or matched so that the condictions of conservation of mass and momentum are retrieved, which basically assures that we obtain the wave equation at the macroscopic limit
 ```c++
