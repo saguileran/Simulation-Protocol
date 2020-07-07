@@ -418,7 +418,7 @@ sudo g++ -fopenmp D2Q5-examples.cpp
 time sudo ./a.out
 ```
 
-To plot with gnuplot the second line changes to **time sudo ./a.out | gnuplot**, this line sends the output data the a.out file to gnupot an plot it, remember uncomment the lines of Gnuplot in the c++ file.
+To plot with gnuplot the second line changes to **time sudo ./a.out | gnuplot**, this line sends the output data the a.out file to gnupot an plot it, remember uncomment the lines of Gnuplot in the c++ file. The correct file is [D2Q5-example-Gnuplot.cpp](https://github.com/saguileran/Acoustics-Instruments/blob/master/Simulation/Scripts/D2Q5-Gnuplot/D2Q5-example-Gnuplot.cpp).
 
 To use OpenCL use the example in [D2Q5-OpenCL](https://github.com/saguileran/Acoustics-Instruments/Simulation/Scripts/D2Q5-OpenCL) folder of Scripts, remember that freeglut is necessary. Now the Linux commands are
 
