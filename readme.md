@@ -438,7 +438,7 @@ Although Gnuplot is commonly used, ParaView software is more appropriate. It let
 **Gnuplot**
 
 <p align="center">
-  <img width="570" src="https://github.com/saguileran/Simulation-Protocol/tree/master/Images/pelicula0.gif">
+  <img width="570" src="Images/pelicula0.gif">
 </p>
 
 **OpenCL**
